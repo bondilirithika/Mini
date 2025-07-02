@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <base href="/" />
+  <title>Intelligent Threat Identification System</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #34495e;
+      --accent: #3498db;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --text: #333;
+      --text-light: #7f8c8d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo i {
+      font-size: 2.5rem;
+      margin-right: 1rem;
+      color: var(--accent);
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .card-header i {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      color: var(--accent);
+    }
+
+    .card-header h2 {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    textarea,
+    input[type='text'] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border 0.3s ease;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    input[type='text']:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .result {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-top: 1.5rem;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result.success {
+      background-color: rgba(46, 204, 113, 0.1);
+      border-left: 4px solid var(--success);
+      color: var(--success);
+    }
+
+    .result.warning {
+      background-color: rgba(243, 156, 18, 0.1);
+      border-left: 4px solid var(--warning);
+      color: var(--warning);
+    }
+
+    .result.danger {
+      background-color: rgba(231, 76, 60, 0.1);
+      border-left: 4px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-header i {
+      margin-right: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .confidence-meter {
+      margin-top: 0.5rem;
+      height: 8px;
+      background: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .confidence-level {
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        var(--success),
+        var(--warning),
+        var(--danger)
+      );
+    }
+
+    .features-list {
+      margin-top: 1rem;
+      padding-left: 1.5rem;
+    }
+
+    .features-list li {
+      margin-bottom: 0.5rem;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+      border: 4px solid rgba(52, 152, 219, 0.2);
+      border-radius: 50%;
+      border-top: 4px solid var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .model-info {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    .patterns-list {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .pattern-item {
+      background-color: rgba(231, 76, 60, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border-left: 2px solid var(--danger);
+      font-family: monospace;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      header {
+        padding: 1.5rem 0;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <h1>Intelligent Threat Identification System</h1>
+      </div>
+      <p>Detect phishing URLs and SQL injection attacks with AI-powered analysis.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tabs">
+      <div id="tab-phishing" class="tab active">Phishing URL Detection</div>
+      <div id="tab-sqli" class="tab">SQL Injection Detection</div>
+    </div>
+
+    <!-- Phishing URL Detection Tab -->
+    <section id="phishing-section" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-link"></i>
+          <h2>Phishing URL Detection</h2>
+        </div>
+        <div class="form-group">
+          <label for="urlInput">Enter URL to analyze:</label>
+          <input type="text" id="urlInput" placeholder="https://example.com" />
+        </div>
+        <button id="btnPredictPhishing" class="btn">Analyze URL</button>
+
+        <div id="loadingPhishing" class="loading">
+          <div class="spinner"></div>
+          <p>Analyzing URL...</p>
+        </div>
+
+        <div id="resultPhishing" class="result">
+          <div class="result-header">
+            <i id="resultIconPhishing" class="fas"></i>
+            <span id="resultTextPhishing"></span>
+          </div>
+          <div>Confidence: <span id="confidencePhishing"></span>%</div>
+          <div class="confidence-meter">
+            <div id="confidenceLevelPhishing" class="confidence-level" style="width: 0%;"></div>
+          </div>
+
+          <ul id="featuresListPhishing" class="features-list"></ul>
+          <div id="featuresContainerPhishing" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SQL Injection Detection Tab -->
+    <section id="sqli-section" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-database"></i>
+          <h2>SQL Injection Detection</h2>
+        </div>
+        <div class="form-group">
+          <label for="sqlInput">Enter SQL query to analyze:</label>
+          <textarea id="sqlInput" placeholder="SELECT * FROM users WHERE id = 1"></textarea>
+        </div>
+        <button id="btnPredictSQLi" class="btn">Analyze SQL</button>
+
+        <div id="loadingSQLi" class="loading">
+          <div class="spinner"></div>
+          <p>Analyzing SQL...</p>
+        </div>
+
+        <div id="resultSQLi" class="result">
+          <div class="result-header">
+            <i id="resultIconSQLi" class="fas"></i>
+            <span id="resultTextSQLi"></span>
+          </div>
+          <div>Confidence: <span id="confidenceSQLi"></span>%</div>
+          <div class="confidence-meter">
+            <div id="confidenceLevelSQLi" class="confidence-level" style="width: 0%;"></div>
+          </div>
+          <div id="patternsSQLi" class="patterns-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Intelligent Threat Identification System
+  </footer>
+  <script>
+  // Tab switching
+  const tabPhishing = document.getElementById('tab-phishing');
+  const tabSQLi = document.getElementById('tab-sqli');
+  const phishingSection = document.getElementById('phishing-section');
+  const sqliSection = document.getElementById('sqli-section');
+
+  tabPhishing.addEventListener('click', () => {
+    tabPhishing.classList.add('active');
+    tabSQLi.classList.remove('active');
+    phishingSection.classList.add('active');
+    sqliSection.classList.remove('active');
+  });
+
+  tabSQLi.addEventListener('click', () => {
+    tabSQLi.classList.add('active');
+    tabPhishing.classList.remove('active');
+    sqliSection.classList.add('active');
+    phishingSection.classList.remove('active');
+  });
+
+  // Phishing URL Detection
+  const btnPredictPhishing = document.getElementById('btnPredictPhishing');
+  const urlInput = document.getElementById('urlInput');
+  const loadingPhishing = document.getElementById('loadingPhishing');
+  const resultPhishing = document.getElementById('resultPhishing');
+  const resultIconPhishing = document.getElementById('resultIconPhishing');
+  const resultTextPhishing = document.getElementById('resultTextPhishing');
+  const confidencePhishing = document.getElementById('confidencePhishing');
+  const confidenceLevelPhishing = document.getElementById('confidenceLevelPhishing');
+  const featuresListPhishing = document.getElementById('featuresListPhishing');
+
+  btnPredictPhishing.addEventListener('click', predictPhishing);
+
+  async function predictPhishing() {
+    const url = urlInput.value.trim();
+    if (!url) {
+      alert('Please enter a URL.');
+      return;
+    }
+
+    loadingPhishing.style.display = 'block';
+    resultPhishing.style.display = 'none';
+
+    try {
+      const response = await fetch('/predict/phishing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      loadingPhishing.style.display = 'none';
+      resultPhishing.style.display = 'block';
+
+      const pred = data.prediction;   // which is 0 or 1
+      const confidence = (data.confidence * 100).toFixed(2);
+      const features = data.features || [];
+
+      let statusClass = '';
+      let iconClass = '';
+      let resultMessage = '';
+
+      console.log('Phishing prediction:', pred);
+      console.log('Confidence:', confidence);
+      console.log('Features:', features);
+
+      if (pred === 0) {
+        statusClass = 'danger';
+        iconClass = 'fa-exclamation-triangle';
+        resultMessage = 'Phishing URL Detected!';
+      } else {
+        statusClass = 'success';
+        iconClass = 'fa-check-circle';
+        resultMessage = 'Legitimate URL Detected!';
+      }
+
+      resultPhishing.className = `result ${statusClass}`;
+      resultIconPhishing.className = `fas ${iconClass}`;
+      resultTextPhishing.textContent = resultMessage;
+      confidencePhishing.textContent = confidence;
+      confidenceLevelPhishing.style.width = `${confidence}%`;
+
+      featuresListPhishing.innerHTML = '';
+      features.forEach((feature) => {
+        const li = document.createElement('li');
+        li.textContent = feature;
+        featuresListPhishing.appendChild(li);
+      });
+    } catch (error) {
+      loadingPhishing.style.display = 'none';
+      alert('Error: ' + error.message);
+    }
+  }
+
+  // SQL Injection Detection
+  const btnPredictSQLi = document.getElementById('btnPredictSQLi');
+  const sqlInput = document.getElementById('sqlInput');
+  const loadingSQLi = document.getElementById('loadingSQLi');
+  const resultSQLi = document.getElementById('resultSQLi');
+  const resultIconSQLi = document.getElementById('resultIconSQLi');
+  const resultTextSQLi = document.getElementById('resultTextSQLi');
+  const confidenceSQLi = document.getElementById('confidenceSQLi');
+  const confidenceLevelSQLi = document.getElementById('confidenceLevelSQLi');
+  const patternsSQLi = document.getElementById('patternsSQLi');
+
+  btnPredictSQLi.addEventListener('click', predictSQLi);
+
+  async function predictSQLi() {
+    const sql = sqlInput.value.trim();
+    if (!sql) {
+      alert('Please enter a SQL query.');
+      return;
+    }
+
+    loadingSQLi.style.display = 'block';
+    resultSQLi.style.display = 'none';
+
+    try {
+      const response = await fetch('/predict/sql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: sql })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+
+      loadingSQLi.style.display = 'none';
+      resultSQLi.style.display = 'block';
+
+      const pred = data.prediction;
+      const confidence = (data.confidence * 100).toFixed(2);
+      const patterns = data.patterns || [];
+
+      let statusClass = '';
+      let iconClass = '';
+      let resultMessage = '';
+
+      if (pred === 1) {
+        statusClass = 'danger';
+        iconClass = 'fa-exclamation-triangle';
+        resultMessage = 'SQL Injection Detected!';
+      } else {
+        statusClass = 'success';
+        iconClass = 'fa-check-circle';
+        resultMessage = 'Safe SQL Query Detected!';
+      }
+
+      resultSQLi.className = `result ${statusClass}`;
+      resultIconSQLi.className = `fas ${iconClass}`;
+      resultTextSQLi.textContent = resultMessage;
+      confidenceSQLi.textContent = confidence;
+      confidenceLevelSQLi.style.width = `${confidence}%`;
+
+      patternsSQLi.innerHTML = '';
+      patterns.forEach((pattern) => {
+        const span = document.createElement('span');
+        span.className = 'pattern-item';
+        span.textContent = pattern;
+        patternsSQLi.appendChild(span);
+        patternsSQLi.appendChild(document.createElement('br'));
+      });
+    } catch (error) {
+      loadingSQLi.style.display = 'none';
+      console.error('Full error:', error);
+      alert(`Error: ${error.message}\n\nPlease check the console for details.`);
+    }
+  }
+</script>
+</body>
+</html>
